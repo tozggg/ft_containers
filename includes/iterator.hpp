@@ -39,7 +39,8 @@ namespace ft
 
 	/* reverse_iterator */
 	template <class Iterator>
-	class reverse_iterator {
+	class reverse_iterator
+	{
 		public:
 			typedef Iterator                                                iterator_type;
     		typedef typename iterator_traits<Iterator>::iterator_category   iterator_category;
@@ -65,17 +66,17 @@ namespace ft
 
 			iterator_type base() const { return _base; }
 
-			reference operator*() const { return *(_base - 1); }
-			pointer operator->() const { return &(operator*()); }
-			reference operator[](difference_type n) const { return *(_base - 1 - n) }
-			reverse_iterator& operator++() { --_base; return *this; }
-			reverse_iterator operator++(int) { reverse_iterator tmp(*this); --_base; return tmp; }
-			reverse_iterator& operator--() { ++_base; return *this; }
-			reverse_iterator operator--(int) { reverse_iterator tmp(*this); ++_base; return tmp; }
-			reverse_iterator operator+(difference_type n) const { return reverse_iterator(_base - n); }
-			reverse_iterator& operator+=(difference_type n) { _base -= n; return *this; }
-			reverse_iterator operator-(difference_type n) const { return reverse_iterator(_base + n); }
-			reverse_iterator& operator-=(difference_type n) { _base += n; return *this; }
+			reference			operator*() const { return *(_base - 1); }
+			pointer				operator->() const { return &(operator*()); }
+			reference			operator[](difference_type n) const { return *(_base - 1 - n) }
+			reverse_iterator&	operator++() { --_base; return *this; }
+			reverse_iterator	operator++(int) { reverse_iterator tmp(*this); --_base; return tmp; }
+			reverse_iterator&	operator--() { ++_base; return *this; }
+			reverse_iterator	operator--(int) { reverse_iterator tmp(*this); ++_base; return tmp; }
+			reverse_iterator	operator+(difference_type n) const { return reverse_iterator(_base - n); }
+			reverse_iterator&	operator+=(difference_type n) { _base -= n; return *this; }
+			reverse_iterator	operator-(difference_type n) const { return reverse_iterator(_base + n); }
+			reverse_iterator&	operator-=(difference_type n) { _base += n; return *this; }
 	};
 
 	template <class IterL, class IterR>
@@ -114,7 +115,8 @@ namespace ft
 	/* vector_iterator */
 	// =random access iterator
 	template <typename T>
-	class vector_iterator {
+	class vector_iterator
+	{
 		public:
 			typedef T								value_type;
 			typedef T*								pointer;
@@ -139,17 +141,17 @@ namespace ft
 
 			pointer base(void) const { return _ptr; }
 
-			reference operator*() const { return *_ptr; }
-			pointer operator->() const { return &(operator*()); }
-			reference operator[](difference_type n) const { return _ptr[n]; }
-			vector_iterator& operator++() { ++_ptr; return *this; }
-			vector_iterator operator++(int) { vector_iterator tmp(*this); ++_ptr; return tmp; }
-			vector_iterator& operator--() { --_ptr; return *this; }
-			vector_iterator operator--(int) { vector_iterator tmp(*this); --_ptr; return tmp; }
-			vector_iterator operator+(difference_type n) const { return _ptr + n; }
-			vector_iterator& operator+=(difference_type n) { _ptr += n; return *this; }
-			vector_iterator operator-(difference_type n) const { return _ptr - n }
-			vector_iterator& operator-=(difference_type n) { _ptr -= n; return *this; }
+			reference			operator*() const { return *_ptr; }
+			pointer				operator->() const { return &(operator*()); }
+			reference			operator[](difference_type n) const { return _ptr[n]; }
+			vector_iterator&	operator++() { ++_ptr; return *this; }
+			vector_iterator		operator++(int) { vector_iterator tmp(*this); ++_ptr; return tmp; }
+			vector_iterator&	operator--() { --_ptr; return *this; }
+			vector_iterator		operator--(int) { vector_iterator tmp(*this); --_ptr; return tmp; }
+			vector_iterator		operator+(difference_type n) const { return _ptr + n; }
+			vector_iterator&	operator+=(difference_type n) { _ptr += n; return *this; }
+			vector_iterator		operator-(difference_type n) const { return _ptr - n }
+			vector_iterator&	operator-=(difference_type n) { _ptr -= n; return *this; }
 	};
 
 	template <class IterL, class IterR>

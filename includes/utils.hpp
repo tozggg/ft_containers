@@ -15,12 +15,12 @@ namespace ft
 	struct true_type
 	{
 		static const bool value = true;
-		operator bool() const { return value;}
+		operator bool() const { return value; }
 	};
 	struct false_type
 	{
 		static const bool value = false;
-		operator bool() { return value;}
+		operator bool() { return value; }
 	};
 
 	template<typename T>
@@ -28,8 +28,6 @@ namespace ft
 
 	template<>	struct is_integral<bool> : public true_type {};
 	template<>	struct is_integral<char> : public true_type {};
-	template<>	struct is_integral<char16_t> : public true_type {};
-	template<>	struct is_integral<char32_t> : public true_type {};
 	template<>	struct is_integral<wchar_t> : public true_type {};
 	template<>	struct is_integral<signed char> : public true_type {};
 	template<>	struct is_integral<short> : public true_type {};
@@ -59,7 +57,8 @@ namespace ft
 	template <typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
 	bool equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate pred)
 	{
-		while (first1 != last1) {
+		while (first1 != last1)
+		{
 			if (!pred(*first1, *first2))
 				return false;
 			++first1; ++first2;
@@ -115,8 +114,10 @@ namespace ft
 		template<typename U, typename V>
 		pair(const pair<U,V>& pr) : first(pr.first), second(pr.second) {}
 
-		pair& operator=(const pair& pr) {
-			if (this != &pr) {
+		pair& operator=(const pair& pr)
+		{
+			if (this != &pr)
+			{
 				first = pr.first;
 				second = pr.second;
 			}
@@ -134,7 +135,7 @@ namespace ft
 
 	template <typename T1, typename T2>
 	bool operator<(const pair<T1,T2>& p1, const pair<T1,T2>& p2)
-	{ return (p1.first < p2.first) || (!(p2.first < p1.first) && p1.second < p2.second); }
+	{ return (p1.first < p2.first) || (!(p1.first > p2.first) && p1.second < p2.second); }
 
 	template <typename T1, typename T2>
 	bool operator<=(const pair<T1,T2>& p1, const pair<T1,T2>& p2)
