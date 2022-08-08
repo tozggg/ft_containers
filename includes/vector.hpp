@@ -39,12 +39,12 @@ namespace ft
 			: _alloc(alloc), _ptr(NULL), _size(0), _capacity(0) {}
 			
 			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
-     		: _alloc(alloc), _ptr(NULL), _size(n), _capacity(n)
+			: _alloc(alloc), _ptr(NULL), _size(n), _capacity(n)
 			{
         		_ptr = _alloc.allocate(n);
         		for (size_type i = 0; i < n; i++)
           			_alloc.construct(_ptr + i, val);
-      		}
+			}
 			
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),\
@@ -201,7 +201,7 @@ namespace ft
 			iterator	insert(iterator position, const value_type& val)
 			{
 				size_type idx = position - begin();
-      			reserve(_size + 1);
+				reserve(_size + 1);
 				size_type j = _size;
 				while (j != idx)
 				{
@@ -216,7 +216,7 @@ namespace ft
 			iterator	insert(iterator position, size_type n, const value_type& val)
 			{
 				size_type idx = position - begin();
-      			reserve(_size + n);
+				reserve(_size + n);
 				size_type j = _size;
 				while (j != idx)
 				{
@@ -236,7 +236,7 @@ namespace ft
 				size_type idx = position - begin();
 				size_type n = last - first;
 				reserve(_size + n);
-        		size_type j = _size;
+				size_type j = _size;
 				while (j != idx)
 				{
 					--j;
