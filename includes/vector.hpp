@@ -4,6 +4,7 @@
 # include <memory>
 # include <limits>
 # include <stdexcept>
+# include <algorithm>
 # include "utils.hpp"
 # include "iterator.hpp"
 
@@ -50,7 +51,8 @@ namespace ft
 				typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
 			: _alloc(alloc), _ptr(NULL), _size(0)
 			{
-				difference_type n = last - first;
+				size_type n = last - first;
+				_size = n;
 				_capacity = n;
 				_ptr = _alloc.allocate(n);
 				for (size_type i = 0; i < n; i++)
@@ -184,7 +186,7 @@ namespace ft
 			void	push_back(const value_type& val)
 			{
       			if (_size == _capacity)
-					reserve( empty() ? 1 : _capacity * 2 )
+					reserve( empty() ? 1 : _capacity * 2 );
         		_alloc.construct(_ptr + _size, val);
       			++_size;
     		}
@@ -192,53 +194,56 @@ namespace ft
 			void	pop_back()
 			{
 				if (_size > 0)
-					_alloc.destroy(_ptr_start + _size - 1);
+					_alloc.destroy(_ptr + (_size - 1));
 				--_size;
 			}
 
 			iterator	insert(iterator position, const value_type& val)
 			{
+				size_type idx = position - begin();
       			reserve(_size + 1);
-				iterator it = end();
-				while (it != positon)
+				size_type j = _size;
+				while (j != idx)
 				{
-					--it;
-					_alloc.construct(&(*(it + 1)), *it);
+					--j;
+					_alloc.construct(&(*(_ptr + j + 1)), *(_ptr + j));
 				}
-      			_alloc.construct(&(*position), val);
+      			_alloc.construct(&(*(_ptr + idx)), val);
       			++_size;
-      			return position;
+      			return (iterator(_ptr + idx));
     		}
 			
 			iterator	insert(iterator position, size_type n, const value_type& val)
 			{
+				size_type idx = position - begin();
       			reserve(_size + n);
-				iterator it = end();
-				while (it != positon)
+				size_type j = _size;
+				while (j != idx)
 				{
-					--it;
-					_alloc.construct(&(*(it + n)), *it);
+					--j;
+					_alloc.construct(&(*(_ptr + j + n)), *(_ptr + j));
 				}
 				for (size_type i = 0; i < n; i++)
-       				_alloc.construct(&(*(position + i)), val);
+       				_alloc.construct(&(*(_ptr + idx + i)), val);
       			_size += n;
-      			return position;
+      			return (iterator(_ptr + idx));
     		}
 
 			template <class InputIterator>
     		void		insert(iterator position, InputIterator first, InputIterator last,\
 				typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
 			{
+				size_type idx = position - begin();
 				size_type n = last - first;
 				reserve(_size + n);
-        		iterator it = end();
-				while (it != positon)
+        		size_type j = _size;
+				while (j != idx)
 				{
-					--it;
-					_alloc.construct(&(*(it + n)), *it);
+					--j;
+					_alloc.construct(&(*(_ptr + j + n)), *(_ptr + j));
 				}
 				for (size_type i = 0; i < n; i++)
-					_alloc.construct(&(*(position + i)), *(first + i));
+					_alloc.construct(&(*(_ptr + idx + i)), *(first + i));
 				_size += n;
 			}
 

@@ -27,7 +27,7 @@ namespace ft
 			/* assignment operator */
 			stack& operator=(const stack& rhs)
 			{
-				_c = _rhs.c;
+				_c = rhs.c;
 				return *this;
 			}
 			
@@ -40,27 +40,21 @@ namespace ft
 			void				pop() { _c.pop_back(); }
 
 			/* relational operators */
-			template <typename T, class Container>
 			friend bool operator==(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 			{ return lhs._c == rhs._c; }
 
-			template <typename T, class Container>
 			friend bool operator!=(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 			{ return lhs._c != rhs._c; }
 
-			template <typename T, class Container>
 			friend bool operator<(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 			{ return lhs._c < rhs._c; }
 
-			template <typename T, class Container>
 			friend bool operator<=(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 			{ return lhs._c <= rhs._c; }
 
-			template <typename T, class Container>
 			friend bool operator>(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 			{ return lhs._c > rhs._c; }
 
-			template <typename T, class Container>
 			friend bool operator>=(const stack<T,Container>& lhs, const stack<T,Container>& rhs)
 			{ return lhs._c >= rhs._c; }
 	};
