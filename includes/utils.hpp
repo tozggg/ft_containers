@@ -154,6 +154,17 @@ namespace ft
 	template <class T1, class T2>
 	pair<T1, T2> make_pair(T1 x, T2 y)
 	{ return (pair<T1, T2>(x, y)); }
+
+
+	/* less */
+	template <typename T>
+	struct less
+	{
+		bool operator()(const T &lhs, const T &rhs) const
+		{
+			return lhs < rhs;
+		}
+	};
 }
 
 #endif

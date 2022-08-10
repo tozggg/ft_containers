@@ -1,6 +1,7 @@
 
 #include <vector>
 #include <stack>
+#include <map>
 #include "../includes/vector.hpp"
 #include "../includes/stack.hpp"
 
@@ -8,28 +9,16 @@
 
 int main(void)
 {
-	ft::stack<int> s;
-	ft::vector<int> v;
+	typedef std::map<int, int>::iterator iter_type;
+	std::map<int, int> m;
+	std::map<int, int> k;
 
-//	for (int i = 0; i <=10; i++)
-//		v.push_back(i);
+	std::pair<iter_type, bool> test = m.insert(std::pair<int ,int>(3, 8));
 
-	ft::vector<int> k;
-	for (int i = 1; i <=4; i++)
-		k.push_back(i * 100);
+	size_t st = k.erase(2);
 
 
-	typedef ft::vector_iterator<int> iter_type;
-	iter_type it = v.begin() + 2;
-
-//	v.insert(it, 3, 77);	
-	v.insert(v.end(), 42);
-//	v.insert(v.begin(), 2, 21);
-
-	for (iter_type i = v.begin(); i != v.end(); i++)
-	{
-		std::cout << *i << std::endl;
-	}
+	std::cout << st << std::endl;
 
 	
 	
