@@ -5,7 +5,7 @@
 
 namespace ft
 {
-	template <typename T, class Container = ft::vector<T> >
+	template <typename T, typename Container = ft::vector<T> >
 	class stack
 	{
 	public:
@@ -27,7 +27,7 @@ namespace ft
 		/* assignment operator */
 		stack& operator=(const stack& rhs)
 		{
-			_c = rhs.c;
+			_c = rhs._c;
 			return *this;
 		}
 		

@@ -1,6 +1,9 @@
 #ifndef AVLTREE_HPP
 # define AVLTREE_HPP
 
+# include <memory>
+# include <limits>
+# include <algorithm>
 # include "utils.hpp"
 # include "iterator.hpp"
 
@@ -14,13 +17,14 @@ namespace ft
 		typedef tree_node	node_type;
 		typedef tree_node*	node_pointer;
 
-		value_type		value;
 		node_pointer	parent;
 		node_pointer	left;
 		node_pointer	right;
+		value_type		value;
+		bool			is_sentinel;
 
-		tree_node() : value(value_type()), parent(NULL), left(NULL), right(NULL) {}
-		tree_node(const value_type& v) : value(v), parent(NULL), left(NULL), right(NULL) {}
+		tree_node() : parent(NULL), left(NULL), right(NULL), value(value_type()), is_sentinel(false) {}
+		tree_node(const value_type& v) : parent(NULL), left(NULL), right(NULL), value(v), is_sentinel(false) {}
 	};
 	
 
@@ -53,6 +57,7 @@ namespace ft
 		{
 			_sentinel = _alloc.allocate(1);
 			_alloc.construct(_sentinel, node_type());
+			_sentinel->is_sentinel = true;
 		}
 
 		tree(const tree& other)
@@ -61,6 +66,7 @@ namespace ft
 			_sentinel = _alloc.allocate(1);
 			_alloc.construct(_sentinel, node_type());
 			insert(other.begin(), other.end());
+			_sentinel->is_sentinel = true;
 		}
 
 		/* destructor */
@@ -90,7 +96,7 @@ namespace ft
 			if(_size == 0)
 				return iterator(_sentinel);
 			node = _root;
-			if (node->left)
+			while (node->left)
 				node = node->left;
 			return iterator(node);
 		}
@@ -102,7 +108,7 @@ namespace ft
 			if(_size == 0)
 				return const_iterator(_sentinel);
 			node = _root;
-			if (node->left)
+			while (node->left)
 				node = node->left;
 			return const_iterator(node);
 		}
@@ -119,7 +125,6 @@ namespace ft
 		{ return std::min<size_type>(_alloc.max_size(), std::numeric_limits<difference_type>::max()); }
 
 		/* modifiers */
-		// =====================================================
 		ft::pair<iterator, bool> insert(const value_type& val)
 		{
 			node_pointer node;
@@ -127,40 +132,69 @@ namespace ft
 			if (_size == 0)
 			{
 				set_root(val);
-				return make_pair(iterator(_root), true);
+				return ft::make_pair(iterator(_root), true);
 			}
-			if ((iterator it = find(val)) != end())
-				return make_pair(it, false);
-			node = set_insert(val);
+			iterator it = find(val);
+			if (it != end())
+				return ft::make_pair(it, false);
+			node = insert_node(val);
 			rebalance(node->parent);
-			return make_pair(iterator(node), true);
+			return ft::make_pair(iterator(node), true);
 		}
 
 		iterator insert(iterator position, const value_type& val)
 		{
+			(void)position;
 			node_pointer node;
-			node_pointer ancestor;
 
 			if (_size == 0)
 			{
 				set_root(val);
 				return iterator(_root);
 			}
-			if ((iterator it = find(val)) != end())
+			iterator it = find(val);
+			if (it != end())
 				return it;
-			for (ancestor = position.base(); ancestor->parent; ancestor = ancestor->parent) {}
-			if (ancestor == _sentinel)
-				node = set_insert_with_hint(position, val);
-			else
-				node = set_insert(position, val);
+			node = insert_node(val);
 			rebalance(node->parent);
 			return iterator(node);
 		}
 
+		template <typename InputIterator>
+		void insert(InputIterator first, InputIterator last)
+		{
+			for (InputIterator it = first; it != last; it++)
+				insert(*it);
+		}
 
+		size_type erase(iterator position)
+		{
+			node_pointer node;
+			node_pointer ancestor;
 
+			if (_size == 0 || position == end())
+				return 0;
+			for (ancestor = position.base(); ancestor->parent; ancestor = ancestor->parent) {}
+			if (ancestor != _sentinel)
+				return 0;
+			node = position.base();
+			if (!node->left && !node->right)
+				node = delete_node_leaf(node);
+			else if (node->left && node->right)
+				node = delete_node_2child(node);
+			else
+				node = delete_node_1child(node);
+			rebalance(node);
+			return 1;
+		}
 
-		void swap(tree& t)
+		void erase(iterator first, iterator last)
+		{	
+			for (iterator it = first; it != last;)
+				erase(it++);
+		}
+
+		void swap(tree& x)
 		{
 			value_compare	tmp_comp = _comp;
 			allocator_type	tmp_alloc = _alloc;
@@ -168,17 +202,17 @@ namespace ft
 			node_pointer	tmp_root = _root;
 			size_type		tmp_size = _size;
 
-			_comp = t._comp;
-			_alloc = t._alloc;
-			_sentinel = t._sentinel;
-			_root = t._root;
-			_size = t._size;
+			_comp = x._comp;
+			_alloc = x._alloc;
+			_sentinel = x._sentinel;
+			_root = x._root;
+			_size = x._size;
 
-			t._comp = tmp_comp;
-			t._alloc = tmp_alloc;
-			t._sentinel = tmp_sentinel;
-			t._root = tmp_root;
-			t._size = tmp_size;
+			x._comp = tmp_comp;
+			x._alloc = tmp_alloc;
+			x._sentinel = tmp_sentinel;
+			x._root = tmp_root;
+			x._size = tmp_size;
 		}
 
 		void clear()
@@ -188,7 +222,7 @@ namespace ft
 			delete_node(_root);
 			_sentinel->left = NULL;
 			_sentinel->right = NULL;
-			_root = NULL:
+			_root = NULL;
 			_size = 0;
 		}
 
@@ -205,7 +239,7 @@ namespace ft
 				if (_comp(val, node->value))
 					node = node->left;
 				else if (_comp(node->value, val))
-					node = node->right
+					node = node->right;
 				else
 					return iterator(node);
 			}
@@ -224,7 +258,7 @@ namespace ft
 				if (_comp(val, node->value))
 					node = node->left;
 				else if (_comp(node->value, val))
-					node = node->right
+					node = node->right;
 				else
 					return const_iterator(node);
 			}
@@ -252,7 +286,7 @@ namespace ft
 					node = node->left;
 				}
 				else if (_comp(node->value, val))
-					node = node->right
+					node = node->right;
 				else
 					return iterator(node);
 			}
@@ -273,7 +307,7 @@ namespace ft
 					node = node->left;
 				}
 				else if (_comp(node->value, val))
-					node = node->right
+					node = node->right;
 				else
 					return const_iterator(node);
 			}
@@ -294,7 +328,7 @@ namespace ft
 					node = node->left;
 				}
 				else
-					node = node->right
+					node = node->right;
 			}
 			return iterator(res);
 		}
@@ -313,7 +347,7 @@ namespace ft
 					node = node->left;
 				}
 				else
-					node = node->right
+					node = node->right;
 			}
 			return const_iterator(res);
 		}
@@ -323,6 +357,9 @@ namespace ft
 
 		ft::pair<const_iterator, const_iterator> equal_range (const value_type& val) const
 		{ return ft::make_pair(lower_bound(val), upper_bound(val)); }
+
+		/* allocator */
+		allocator_type get_allocator() const { return _alloc; }
 
 	private:
 		/* private memeber function */
@@ -336,7 +373,7 @@ namespace ft
 			++_size;
 		}
 
-		node_pointer set_insert(const value_type& val)
+		node_pointer insert_node(const value_type& val)
 		{
 			node_pointer node;
 			node_pointer tmp;
@@ -372,13 +409,15 @@ namespace ft
 			return node;
 		}
 
-		node_pointer set_insert_with_hint(iterator position, const value_type& val)
+// fix=======================================
+/*
+		node_pointer insert_node_with_hint(iterator position, const value_type& val)
 		{
 			node_pointer node;
 			node_pointer hint;
 
 			hint = position.base();
-			if (_comp(val, hint->value) && !hint->left)
+			if (_comp(val, hint->value) && !hint->left && (--position == end() || _comp(*position, val)))
 			{
 				node = _alloc.allocate(1);
 				_alloc.construct(node, node_type(val));
@@ -387,7 +426,7 @@ namespace ft
 				++_size;
 				return node;
 			}
-			else if (_comp(hint->vale, val) && !hint->right)
+			else if (_comp(hint->value, val) && !hint->right && (++position == end() || _comp(val, *position)))
 			{
 				node = _alloc.allocate(1);
 				_alloc.construct(node, node_type(val));
@@ -397,9 +436,90 @@ namespace ft
 				return node;
 			}
 			else
-				return set_insert(val);
+				return insert_node(val);
+		}
+*/
+		node_pointer delete_node_leaf(const node_pointer& node)
+		{
+			node_pointer parent = node->parent;
+
+			if (parent->left == node)
+				parent->left = NULL;
+			else
+				parent->right = NULL;
+			
+			if (node == _root)
+			{
+				_root = NULL;
+				_sentinel->left = NULL;
+				_sentinel->right = NULL;
+			}
+			_alloc.destroy(node);
+			_alloc.deallocate(node, 1);
+			--_size;
+			return parent;
 		}
 
+		node_pointer delete_node_1child(const node_pointer& node)
+		{
+			node_pointer parent = node->parent;
+			node_pointer child = node->left ? node->left : node->right;
+
+			if (parent->left == node)
+				parent->left = child;
+			else
+				parent->right = child;
+			child->parent = parent;
+			
+			if (node == _root)
+			{
+				_root = child;
+				_sentinel->left = child;
+				_sentinel->right = child;
+			}
+			_alloc.destroy(node);
+			_alloc.deallocate(node, 1);
+			--_size;
+			return parent;
+		}
+		
+		node_pointer delete_node_2child(const node_pointer& node)
+		{
+			node_pointer parent = node->parent;
+			node_pointer alter;
+
+			for (alter = node->right; alter->left; alter = alter->left) {}
+			
+			if (alter != node->right)
+			{
+				alter->parent->left = alter->right;
+				if (alter->right)
+					alter->right->parent = alter->parent;
+				
+				alter->right = node->right;
+				node->right->parent = alter;
+			}
+
+			if (parent->left == node)
+				parent->left = alter;
+			else
+				parent->right = alter;
+			alter->parent = parent;
+
+			alter->left = node->left;
+			node->left->parent = alter;
+			
+			if (node == _root)
+			{
+				_root = alter;
+				_sentinel->left = alter;
+				_sentinel->right = alter;
+			}
+			_alloc.destroy(node);
+			_alloc.deallocate(node, 1);
+			--_size;
+			return parent;
+		}
 
 		int		get_height(node_pointer node)
 		{
@@ -493,7 +613,7 @@ namespace ft
 				if (bf < -1)
 				{
 					if (balance_factor(node->right) > 0)
-						rotate_ll(node);
+						rotate_ll(node->right);
 					rotate_rr(node);
 				}
 				node = node->parent;

@@ -6,7 +6,7 @@
 namespace ft
 {
 	/* iterator_traits */
-	template <class Iterator>
+	template <typename Iterator>
 	struct iterator_traits
 	{
 		typedef typename Iterator::difference_type  	difference_type;
@@ -38,7 +38,7 @@ namespace ft
 
 
 	/* reverse_iterator */
-	template <class Iterator>
+	template <typename Iterator>
 	class reverse_iterator
 	{
 	public:
@@ -55,7 +55,7 @@ namespace ft
 	public:
 		reverse_iterator() : _base() {}
 		reverse_iterator(iterator_type it) : _base(it) {}
-		template <class Iter>
+		template <typename Iter>
 		reverse_iterator(const reverse_iterator<Iter>& other) : _base(other.base()) {}
 
 		reverse_iterator operator=(const reverse_iterator& rhs)
@@ -66,7 +66,7 @@ namespace ft
 
 		iterator_type base() const { return _base; }
 
-		reference			operator*() const { return *(_base - 1); }
+		reference			operator*() const { iterator_type tmp(_base); return *(--tmp); }
 		pointer				operator->() const { return &(operator*()); }
 		reference			operator[](difference_type n) const { return *(_base - 1 - n); }
 		reverse_iterator&	operator++() { --_base; return *this; }
@@ -110,7 +110,6 @@ namespace ft
 	template <class IterL, class IterR>
 	typename reverse_iterator<IterL>::difference_type operator-(const reverse_iterator<IterL>& lhs, const reverse_iterator<IterR>& rhs)
 	{ return rhs.base() - lhs.base(); }
-
 
 	/* vector_iterator */
 	// =random access iterator
@@ -235,46 +234,59 @@ namespace ft
 	private:
 		node_pointer get_next_node(node_pointer node)
 		{
-			node_pointer tmp;
-
 			if (!node->parent)
 				return node;
 			if (node->right)
-				return node->right;
-			do
 			{
-				tmp = node;
-				node = node->parent;
+				node = node->right;
+				while (node->left)
+					node = node->left;
 			}
-			while (node && node->left != tmp);
+			else
+			{
+				node_pointer tmp;
+				do
+				{
+					tmp = node;
+					node = node->parent;
+				}
+				while (node && node->left != tmp);
+			}
 			return node;
 		}
 
 		node_pointer get_prev_node(node_pointer node)
 		{
-			node_pointer tmp;
-
 			if (!node->parent)
-				return node;
-			if (node->left)
-				return node->left;
-			do
 			{
-				tmp = node;
-				node = node->parent;
+				while (node->right)
+					node = node->right;
+				return node;
 			}
-			while (node && node->right != tmp);
+			if (node->left)
+			{
+				node = node->left;
+				while (node->right)
+					node = node->right;
+			}
+			else
+			{
+				node_pointer tmp;
+				do
+				{
+					tmp = node;
+					node = node->parent;
+				}
+				while (node && node->right != tmp);
+			}
 			return node;
 		}
-	};
 
-	template <typename T, typename NodeType>
-	bool operator==(const tree_iterator<T, NodeType>& lhs, const tree_iterator<T, NodeType>& rhs)
-	{ return lhs.base() == rhs.base(); }
-	
-	template <typename T, typename NodeType>
-	bool operator!=(const tree_iterator<T, NodeType>& lhs, const tree_iterator<T, NodeType>& rhs)
-	{ return lhs.base() != rhs.base(); }
+		friend bool operator==(const tree_iterator& lhs, const tree_iterator& rhs)
+		{ return lhs._ptr == rhs._ptr; }
+		friend bool operator!=(const tree_iterator& lhs, const tree_iterator& rhs)
+		{ return lhs._ptr != rhs._ptr; }
+	};
 }
 
 #endif

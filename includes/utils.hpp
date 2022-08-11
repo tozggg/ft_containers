@@ -33,12 +33,10 @@ namespace ft
 	template<>	struct is_integral<short> : public true_type {};
 	template<>	struct is_integral<int> : public true_type {};
 	template<>	struct is_integral<long> : public true_type {};
-	template<>	struct is_integral<long long> : public true_type {};
 	template<>	struct is_integral<unsigned char> : public true_type {};
 	template<>	struct is_integral<unsigned short> : public true_type {};
 	template<>	struct is_integral<unsigned int> : public true_type {};
 	template<>	struct is_integral<unsigned long> : public true_type {};
-	template<>	struct is_integral<unsigned long long> : public true_type {};
 
 
 	/* equal */
@@ -151,7 +149,7 @@ namespace ft
 	
 	
 	/* make_pair */
-	template <class T1, class T2>
+	template <typename T1, typename T2>
 	pair<T1, T2> make_pair(T1 x, T2 y)
 	{ return (pair<T1, T2>(x, y)); }
 
