@@ -1,5 +1,0 @@
-[vector_reserve]
-_vector_reserve_exception_msg_compare: [DIFF: exception not thrown from allocator (undefined behavior) (srcs/vector/VectorTest_Capacity.cpp:184)]
-[vector_pop_back]
-_vector_pop_back_empty        : [FAIL: size not (size_t)-1 on empty (undefined behavior) (srcs/vector/VectorTest_Modifiers.cpp:270)]
-_vector_pop_back_compare_zero : [FAIL: result differs from std after pop_back on empty int vector (undefined behavior) (srcs/vector/VectorTest_Modifiers.cpp:290)]

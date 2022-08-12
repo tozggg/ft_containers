@@ -54,7 +54,7 @@ namespace ft
 	
 	public:
 		reverse_iterator() : _base() {}
-		reverse_iterator(iterator_type it) : _base(it) {}
+		explicit reverse_iterator(iterator_type it) : _base(it) {}
 		template <typename Iter>
 		reverse_iterator(const reverse_iterator<Iter>& other) : _base(other.base()) {}
 

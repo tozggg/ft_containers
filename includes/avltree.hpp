@@ -138,26 +138,14 @@ namespace ft
 			if (it != end())
 				return ft::make_pair(it, false);
 			node = insert_node(val);
-			rebalance(node->parent);
+			insert_rebalance(node->parent);
 			return ft::make_pair(iterator(node), true);
 		}
-
+		
 		iterator insert(iterator position, const value_type& val)
 		{
 			(void)position;
-			node_pointer node;
-
-			if (_size == 0)
-			{
-				set_root(val);
-				return iterator(_root);
-			}
-			iterator it = find(val);
-			if (it != end())
-				return it;
-			node = insert_node(val);
-			rebalance(node->parent);
-			return iterator(node);
+			return insert(val).first;
 		}
 
 		template <typename InputIterator>
@@ -184,7 +172,7 @@ namespace ft
 				node = delete_node_2child(node);
 			else
 				node = delete_node_1child(node);
-			rebalance(node);
+			erase_rebalance(node);
 			return 1;
 		}
 
@@ -219,7 +207,7 @@ namespace ft
 		{
 			if (_size == 0)
 				return ;
-			delete_node(_root);
+			destroy(_root);
 			_sentinel->left = NULL;
 			_sentinel->right = NULL;
 			_root = NULL;
@@ -408,37 +396,7 @@ namespace ft
 			++_size;
 			return node;
 		}
-
-// fix=======================================
-/*
-		node_pointer insert_node_with_hint(iterator position, const value_type& val)
-		{
-			node_pointer node;
-			node_pointer hint;
-
-			hint = position.base();
-			if (_comp(val, hint->value) && !hint->left && (--position == end() || _comp(*position, val)))
-			{
-				node = _alloc.allocate(1);
-				_alloc.construct(node, node_type(val));
-				hint->left = node;
-				node->parent = hint;
-				++_size;
-				return node;
-			}
-			else if (_comp(hint->value, val) && !hint->right && (++position == end() || _comp(val, *position)))
-			{
-				node = _alloc.allocate(1);
-				_alloc.construct(node, node_type(val));
-				hint->right = node;
-				node->parent = hint;
-				++_size;
-				return node;
-			}
-			else
-				return insert_node(val);
-		}
-*/
+		
 		node_pointer delete_node_leaf(const node_pointer& node)
 		{
 			node_pointer parent = node->parent;
@@ -597,7 +555,32 @@ namespace ft
 			}
 		}
 
-		void	rebalance(node_pointer node)
+		void	insert_rebalance(node_pointer node)
+		{
+			int bf;
+
+			while (node != _sentinel)
+			{
+				bf = balance_factor(node);
+				if (bf > 1)
+				{
+					if (balance_factor(node->left) < 0)
+						rotate_rr(node->left);
+					rotate_ll(node);
+					break ;
+				}
+				if (bf < -1)
+				{
+					if (balance_factor(node->right) > 0)
+						rotate_ll(node->right);
+					rotate_rr(node);
+					break ;
+				}
+				node = node->parent;
+			}
+		}
+
+		void	erase_rebalance(node_pointer node)
 		{
 			int bf;
 
@@ -620,12 +603,12 @@ namespace ft
 			}
 		}
 
-		void	delete_node(node_pointer node)
+		void	destroy(node_pointer node)
 		{
 			if (!node)
 				return ;
-			delete_node(node->left);
-			delete_node(node->right);
+			destroy(node->left);
+			destroy(node->right);
 			_alloc.destroy(node);
 			_alloc.deallocate(node, 1);
 		}

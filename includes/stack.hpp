@@ -18,7 +18,7 @@ namespace ft
 	
 	public:
 		/* constructor */
-		stack(const container_type& ctnr = container_type()) : _c(ctnr) {}
+		explicit stack(const container_type& ctnr = container_type()) : _c(ctnr) {}
 		stack(const stack& other) : _c(other._c) {}
 
 		/* destructor */

@@ -1,5 +1,5 @@
-#ifndef MAP_HPP_
-# define MAP_HPP_
+#ifndef MAP_HPP
+# define MAP_HPP
 
 # include "avltree.hpp"
 
@@ -35,8 +35,8 @@ namespace ft
 		typedef typename tree_type::const_iterator								const_iterator;
 		typedef ft::reverse_iterator<iterator>									reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>							const_reverse_iterator;
-		typedef std::size_t														size_type;
 		typedef std::ptrdiff_t													difference_type;
+		typedef std::size_t														size_type;
 
 	private:
 		key_compare		_key_comp;
@@ -46,7 +46,7 @@ namespace ft
 	
 	public:
 		/* constructor */
-		map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+		explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 		: _key_comp(comp), _value_comp(comp), _alloc(alloc), _tree(_value_comp, _alloc) {}
 
 		template <typename InputIterator>

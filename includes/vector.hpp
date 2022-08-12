@@ -35,17 +35,17 @@ namespace ft
 	
 	public:
 		/* constructor */
-		vector(const allocator_type& alloc = allocator_type())
+		explicit vector(const allocator_type& alloc = allocator_type())
 		: _alloc(alloc), _ptr(NULL), _size(0), _capacity(0) {}
 		
-		vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
+		explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
 		: _alloc(alloc), _ptr(NULL), _size(n), _capacity(n)
 		{
 			_ptr = _alloc.allocate(n);
 			for (size_type i = 0; i < n; i++)
 				_alloc.construct(_ptr + i, val);
 		}
-		
+
 		template <typename InputIterator>
 		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),\
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
@@ -97,14 +97,14 @@ namespace ft
 
 		/* capacity */
 		size_type	size() const { return _size; }
-		
+
 		size_type	max_size() const
 		{ return std::min<size_type>(_alloc.max_size(), std::numeric_limits<difference_type>::max()); }
 
 		void		resize(size_type n, value_type val = value_type())
 		{
 			if (n > _capacity)
-				reserve((n > _capacity * 2) ? n : _capacity * 2);
+				reserve( (n > _capacity * 2) ? n : _capacity * 2 );
 			if (n >= _size)
 			{
 				for (size_type i = _size; i < n; i++)
@@ -114,7 +114,6 @@ namespace ft
 			{
 				for (size_type i = n; i < _size; i++)
 					_alloc.destroy(_ptr + i);
-				_capacity = n;
 			}
 			_size = n;
 		}
@@ -200,7 +199,8 @@ namespace ft
 		iterator	insert(iterator position, const value_type& val)
 		{
 			size_type idx = position - begin();
-			reserve(_size + 1);
+			if (_size == _capacity)
+				reserve( empty() ? 1 : _capacity * 2 );
 			size_type j = _size;
 			while (j != idx)
 			{
@@ -215,7 +215,8 @@ namespace ft
 		iterator	insert(iterator position, size_type n, const value_type& val)
 		{
 			size_type idx = position - begin();
-			reserve(_size + n);
+			if (_size + n > _capacity)
+				reserve( (_size + n > _capacity * 2) ? _size + n : _capacity * 2 );
 			size_type j = _size;
 			while (j != idx)
 			{
@@ -234,7 +235,11 @@ namespace ft
 		{
 			size_type idx = position - begin();
 			size_type n = std::distance(first, last);
-			reserve(_size + n);
+			if (_size + n > _capacity)
+				reserve( (_size + n > _capacity * 2) ? _size + n : _capacity * 2 );
+			value_type copy[n];
+			for (size_type i = 0; i < n; i++)
+				copy[i] = *(first++);
 			size_type j = _size;
 			while (j != idx)
 			{
@@ -242,7 +247,7 @@ namespace ft
 				_alloc.construct(&(*(_ptr + j + n)), *(_ptr + j));
 			}
 			for (size_type i = 0; i < n; i++)
-				_alloc.construct(&(*(_ptr + idx + i)), *(first++));
+				_alloc.construct(&(*(_ptr + idx + i)), *(copy + i));
 			_size += n;
 		}
 
