@@ -124,19 +124,19 @@ int	main(void)
 	std::cout << "<vector - swap>" << std::endl;
 	print_vector(fv2, sv2);
 	print_vector(fv4, sv4);
-	sv2.swap(sv4);
 	fv2.swap(fv4);
+	sv2.swap(sv4);
 	print_vector(fv2, sv2);
 	print_vector(fv4, sv4);
 
 	std::cout << "<vector - deep copy>" << std::endl;
-	std::vector<int> sv6;
 	ft::vector<int> fv6;
+	std::vector<int> sv6;
 	{
-		std::vector<int> sv7(5, 99);
 		ft::vector<int> fv7(5, 99);
-		sv6 = sv7;
+		std::vector<int> sv7(5, 99);
 		fv6 = fv7;
+		sv6 = sv7;
 	}
 	print_vector(fv6, sv6);
 //-------------------------------------------------------------------------------
@@ -205,6 +205,23 @@ int	main(void)
 	sm.swap(sm2);
 	print_map(fm, sm);
 	print_map(fm2, sm2);
+
+	std::cout << "<map - deep copy>" << std::endl;
+	ft::map<int, char> fm6;
+	std::map<int, char> sm6;
+	{
+		ft::map<int, char> fm7;
+		std::map<int, char> sm7;
+		fm7.insert(ft::pair<int, char>(1, 'a'));
+		sm7.insert(std::pair<int, char>(1, 'a'));
+		fm7.insert(ft::pair<int, char>(3, 'c'));
+		sm7.insert(std::pair<int, char>(3, 'c'));
+		fm7.insert(ft::pair<int, char>(2, 'b'));
+		sm7.insert(std::pair<int, char>(2, 'b'));
+		fm6 = fm7;
+		sm6 = sm7;
+	}
+	print_map(fm6, sm6);
 //-------------------------------------------------------------------------------
 	std::cout << "<stack>" << std::endl;
 	ft::stack<int> fs;
