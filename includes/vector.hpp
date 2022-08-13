@@ -237,17 +237,14 @@ namespace ft
 			size_type n = std::distance(first, last);
 			if (_size + n > _capacity)
 				reserve( (_size + n > _capacity * 2) ? _size + n : _capacity * 2 );
-			value_type copy[n];
-			for (size_type i = 0; i < n; i++)
-				copy[i] = *(first++);
 			size_type j = _size;
 			while (j != idx)
 			{
 				--j;
 				_alloc.construct(&(*(_ptr + j + n)), *(_ptr + j));
 			}
-			for (size_type i = 0; i < n; i++)
-				_alloc.construct(&(*(_ptr + idx + i)), *(copy + i));
+			for (size_type i = n; i > 0; i--)
+				_alloc.construct(&(*(_ptr + idx + (i - 1))), *(--last));
 			_size += n;
 		}
 
